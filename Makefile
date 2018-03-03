@@ -10,14 +10,14 @@ CC	=	gcc -Wall -Wextra
 
 RM	=	rm -f
 
-NAME	=	philosopher
+NAME	=	philo
 
 SRC	=	philosopher.c
 
 OBJ	=	$(SRC:.c=.o)
 
 $(NAME)	:	$(OBJ)
-		$(CC) $(OBJ) -o $(NAME) -pthread -lpthread
+		$(CC) $(OBJ) -o $(NAME) -pthread -lpthread -lriceferee
 
 all	:	$(NAME)
 
