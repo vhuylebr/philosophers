@@ -88,16 +88,18 @@ void start(list_t *philo, int nb_philo)
         while (tmp->next) {
                 if (tmp->state == EATING)
                         set_resting(tmp);
-                else if (pthread_mutex_trylock(&tmp->next->chopstick) == 16) {
-                        if (pthread_mutex_trylock(&tmp->chopstick) == 16) {
+                else if (pthread_mutex_trylock(&tmp->chopstick) == 16) {
+                        if (pthread_mutex_trylock(&tmp->next->chopstick) == 16) {
                                 tmp->state = RESTING;
-                        } else
-                                tmp->state = THINKING;
-                } else if (pthread_mutex_trylock(&tmp->chopstick) == 16) {
-                        tmp->state = THINKING;
+                        } else {
+                                pthread_mutex_unlock(&tmp->next->chopstick);
+                                tmp->state = RESTING;
+                        }
+                } else if (pthread_mutex_trylock(&tmp->next->chopstick) == 16) {
+                        tmp->state = RESTING;
+                        pthread_mutex_unlock(&tmp->chopstick);
                 } else {
                         tmp->state = EATING;
-                        tmp = tmp->next;
                         --tmp->nb_rice;
                 }
                 /*
@@ -113,7 +115,7 @@ void start(list_t *philo, int nb_philo)
                 if (end >= nb_philo)
                         break;
                 if (tmp->id == nb_philo - 1) {
-                        break ;
+                        //break ;
                         printf("------------------------------------------------------\n");
                         end = 0;
                 }
@@ -125,6 +127,8 @@ int main(int ac, char **av)
 {
         list_t *philo = NULL;
 
+
+        //RCFStartup(ac, av);
 	if (ac > 1 && strcmp(av[1], "--help") == 0)
 		help();
 	if (ac != 5)
@@ -133,5 +137,6 @@ int main(int ac, char **av)
 		return (84);
         philo = init(atoi(av[2]), atoi(av[4]), philo);
         start(philo, atoi(av[2]));
+	//RCFCleanup();
         return (0);
 }
