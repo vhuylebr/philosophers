@@ -29,6 +29,7 @@ typedef struct list_s {
         State state;
         int use_left;
         pthread_mutex_t chopstick;
+	pthread_t thread;
         int use_right;
         int nb_rice;
         struct list_s *tail;

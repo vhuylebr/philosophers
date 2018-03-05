@@ -31,7 +31,6 @@ list_t *init(int nb_philo, int nb_rice, list_t *philo)
         philo->use_right = 0;
         philo->state = UNDIFINED;
         philo->chopstick = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-        pthread_mutex_unlock(&philo->chopstick);
         while (i < nb_philo) {
                 philo->tail->next = malloc(sizeof(list_t));
                 philo->tail->next->next = NULL;
@@ -40,7 +39,6 @@ list_t *init(int nb_philo, int nb_rice, list_t *philo)
                 philo->tail->next->use_left = 0;
                 philo->tail->next->use_right = 0;
                 philo->tail->next->chopstick = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-                pthread_mutex_unlock(&philo->tail->next->chopstick);
                 philo->tail->next->state = UNDIFINED;
                 philo->tail->next->prev = philo->tail;
                 philo->tail = philo->tail->next;
@@ -54,83 +52,44 @@ list_t *init(int nb_philo, int nb_rice, list_t *philo)
         return philo;
 }
 
-void set_eating(list_t *to_eat)
-{
-        pthread_mutex_lock(&to_eat->chopstick);
-        pthread_mutex_lock(&to_eat->next->chopstick);
-        write(1, "zz", 2);
-        to_eat->state = EATING;
-        --to_eat->nb_rice;
-}
-
-void set_resting(list_t *to_rest)
-{
-        pthread_mutex_unlock(&to_rest->chopstick);
-        pthread_mutex_unlock(&to_rest->next->chopstick);
-        to_rest->state = RESTING;
-}
-
-void set_thinking(list_t *to_think)
-{
-        if (!pthread_mutex_trylock(&to_think->next->chopstick)) {
-                pthread_mutex_lock(&to_think->chopstick);
-        } else if (!pthread_mutex_trylock(&to_think->chopstick)) {
-                pthread_mutex_lock(&to_think->next->chopstick);
-        }
-        to_think->state = THINKING;
-}
-
-void start(list_t *philo, int nb_philo)
+void *start(void *philo)
 {
         list_t *tmp = philo;
-        int end = 0;
 
-        while (tmp->next) {
-                if (pthread_mutex_trylock(&tmp->chopstick) == 0) {
-                        tmp->state = THINKING;
-                        if (pthread_mutex_trylock(&tmp->next->chopstick) == 16) {
-                                tmp->state = EATING;
-                                lphilo_eat();
-                                pthread_mutex_unlock(&tmp->next->chopstick);
-                                pthread_mutex_unlock(&tmp->chopstick);
-                        }
-                }
-/*                if (tmp->state == EATING)
-                        set_resting(tmp);
-                else if (pthread_mutex_trylock(&tmp->chopstick) == 16) {
-                        if (pthread_mutex_trylock(&tmp->next->chopstick) == 16) {
-                                tmp->state = RESTING;
-                        } else {
-                                pthread_mutex_unlock(&tmp->next->chopstick);
-                                tmp->state = RESTING;
-                        }
-                } else if (pthread_mutex_trylock(&tmp->next->chopstick) == 16) {
-                        tmp->state = RESTING;
-                        pthread_mutex_unlock(&tmp->chopstick);
-                } else {
-                        tmp->state = EATING;
-                        --tmp->nb_rice;
-                }*/
-                printf("philo nb=%i is %i and left %i rice and %i philosophers has finish\n", tmp->id, (int)tmp->state, tmp->nb_rice, end);
-                if (tmp->nb_rice <= 0)
-                        ++end;
-                if (end >= nb_philo)
-                        break;
-                if (tmp->id == nb_philo - 1) {
-                        //break ;
-                        printf("------------------------------------------------------\n");
-                        end = 0;
-                }
-                tmp = tmp->next;
-        }
+	while (tmp->nb_rice > 0) {
+        	if (pthread_mutex_trylock(&tmp->chopstick) == 0) {
+			tmp->state = THINKING;
+			lphilo_take_chopstick(&tmp->chopstick);
+			lphilo_think();
+			pthread_mutex_unlock(&tmp->chopstick);
+			lphilo_release_chopstick(&tmp->chopstick);
+                	if (pthread_mutex_trylock(&tmp->next->chopstick) == 0) {
+                        	tmp->state = EATING;
+				pthread_mutex_lock(&tmp->chopstick);
+				lphilo_take_chopstick(&tmp->chopstick);
+				lphilo_take_chopstick(&tmp->next->chopstick);
+                        	lphilo_eat();
+				lphilo_release_chopstick(&tmp->chopstick);
+				lphilo_release_chopstick(&tmp->next->chopstick);
+                        	pthread_mutex_unlock(&tmp->next->chopstick);
+                        	pthread_mutex_unlock(&tmp->chopstick);
+				--tmp->nb_rice;
+				tmp->state = RESTING;
+				lphilo_sleep();
+                	} else
+				pthread_mutex_unlock(&tmp->chopstick);
+        	}
+	}
+	return (tmp);
 }
 
 int main(int ac, char **av)
 {
         list_t *philo = NULL;
+	list_t *tmp;
+	int i;
 
-
-        //RCFStartup(ac, av);
+        RCFStartup(ac, av);
 	if (ac > 1 && strcmp(av[1], "--help") == 0)
 		help();
 	if (ac != 5)
@@ -138,7 +97,18 @@ int main(int ac, char **av)
 	if (atoi(av[2]) <= 0 || atoi(av[4]) < 0)
 		return (84);
         philo = init(atoi(av[2]), atoi(av[4]), philo);
-        start(philo, atoi(av[2]));
-	//RCFCleanup();
+	tmp = philo;
+	for (i = 0; i < atoi(av[2]); ++i) {
+		pthread_create(&tmp->thread, NULL, &start, (void *)tmp);
+		tmp = tmp->next;
+		usleep(20000);
+	}
+	tmp = philo;
+	for (i = 0; i < atoi(av[2]); ++i) {
+		pthread_join(tmp->thread, NULL);
+		tmp = tmp->next;
+	}
+        // start(philo, atoi(av[2]));
+	RCFCleanup();
         return (0);
 }
