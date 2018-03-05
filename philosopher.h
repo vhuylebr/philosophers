@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <pthread.h>
+#include <string.h>
 
 typedef enum State {
         RESTING,
