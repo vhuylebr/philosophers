@@ -19,7 +19,7 @@ OBJ	=	$(SRC:.c=.o)
 LD_LIBRARY_PATH = ./libriceferee.so
 
 $(NAME)	:	$(OBJ)
-		$(CC) $(OBJ) -o $(NAME) -pthread -lpthread
+		$(CC) $(OBJ) -lpthread -o $(NAME)
 
 all	:	$(NAME)
 
