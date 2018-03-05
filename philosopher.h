@@ -16,4 +16,23 @@
 #include <time.h>
 #include <pthread.h>
 
+typedef enum State {
+        RESTING,
+        THINKING,
+        EATING,
+        UNDIFINED
+} State;
+
+typedef struct list_s {
+        int id;
+        State state;
+        int use_left;
+        pthread_mutex_t chopstick;
+        int use_right;
+        int nb_rice;
+        struct list_s *tail;
+        struct list_s *head;
+        struct list_s *prev;
+        struct list_s *next;
+}               list_t;
 #endif /* !PHILOSOPHER_H_ */

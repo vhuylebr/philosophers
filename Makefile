@@ -16,8 +16,10 @@ SRC	=	philosopher.c
 
 OBJ	=	$(SRC:.c=.o)
 
+LD_LIBRARY_PATH = ./libriceferee.so
+
 $(NAME)	:	$(OBJ)
-		$(CC) $(OBJ) -o $(NAME) -pthread -lpthread -lriceferee
+		$(CC) $(OBJ) -o $(NAME) -pthread -lpthread
 
 all	:	$(NAME)
 
