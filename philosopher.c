@@ -86,7 +86,16 @@ void start(list_t *philo, int nb_philo)
         int end = 0;
 
         while (tmp->next) {
-                if (tmp->state == EATING)
+                if (pthread_mutex_trylock(&tmp->chopstick) == 0) {
+                        tmp->state = THINKING;
+                        if (pthread_mutex_trylock(&tmp->next->chopstick) == 16) {
+                                tmp->state = EATING;
+                                lphilo_eat();
+                                pthread_mutex_unlock(&tmp->next->chopstick);
+                                pthread_mutex_unlock(&tmp->chopstick);
+                        }
+                }
+/*                if (tmp->state == EATING)
                         set_resting(tmp);
                 else if (pthread_mutex_trylock(&tmp->chopstick) == 16) {
                         if (pthread_mutex_trylock(&tmp->next->chopstick) == 16) {
@@ -101,16 +110,9 @@ void start(list_t *philo, int nb_philo)
                 } else {
                         tmp->state = EATING;
                         --tmp->nb_rice;
-                }
-                /*
-                } else if (tmp->nb_rice > 0 && tmp->state == THINKING && pthread_mutex_trylock(&tmp->chopstick) == 0 &&
-                        pthread_mutex_trylock(&tmp->next->chopstick) == 0) {
-                                tmp->state = EATING;
-                } else {
-                        tmp->state = THINKING;
                 }*/
                 printf("philo nb=%i is %i and left %i rice and %i philosophers has finish\n", tmp->id, (int)tmp->state, tmp->nb_rice, end);
-                if (tmp->nb_rice == 0)
+                if (tmp->nb_rice <= 0)
                         ++end;
                 if (end >= nb_philo)
                         break;
