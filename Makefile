@@ -12,7 +12,8 @@ RM	=	rm -f
 
 NAME	=	philo
 
-SRC	=	philosopher.c
+SRC	=	philosopher.c	\
+		main.c
 
 OBJ	=	$(SRC:.c=.o)
 
