@@ -17,22 +17,22 @@
 #include "extern.h"
 
 typedef enum State {
-        RESTING,
-        THINKING,
-        EATING,
-        UNDIFINED
+	RESTING,
+	THINKING,
+	EATING,
+	UNDIFINED
 } State;
 
 typedef struct list_s {
-        int id;
-        State state;
-        pthread_mutex_t chopstick;
+	int id;
+	State state;
+	pthread_mutex_t chopstick;
 	pthread_t thread;
-        int nb_rice;
-        struct list_s *tail;
-        struct list_s *head;
-        struct list_s *next;
-}               list_t;
+	int nb_rice;
+	struct list_s *tail;
+	struct list_s *head;
+	struct list_s *next;
+}		list_t;
 
 typedef struct arg_s {
 	int nb_philo;
