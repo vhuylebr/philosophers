@@ -33,13 +33,13 @@ void check_arg(int ac, char **av, arg_t *arg)
 
 int main(int ac, char **av)
 {
-        list_t *philo = NULL;
+	list_t *philo = NULL;
 	list_t *tmp;
 	arg_t arg;
 
 	check_arg(ac, av, &arg);
 	RCFStartup(ac, av);
-        philo = init(arg.nb_philo, arg.nb_rice, philo);
+	philo = init(arg.nb_philo, arg.nb_rice, philo);
 	tmp = philo;
 	for (int i = 0; i < arg.nb_philo; ++i) {
 		pthread_create(&tmp->thread, NULL, &start, (void *)tmp);
@@ -52,5 +52,5 @@ int main(int ac, char **av)
 		tmp = tmp->next;
 	}
 	RCFCleanup();
-        return (0);
+	return (0);
 }
