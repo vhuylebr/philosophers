@@ -21,7 +21,8 @@ void init_philo(list_t *philo, int nb_rice, int i)
 	philo->tail->next->next = NULL;
 	philo->tail->next->id = i;
 	philo->tail->next->nb_rice = nb_rice;
-	philo->tail->next->chopstick = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+	philo->tail->next->chopstick =
+		(pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 	philo->tail->next->state = UNDIFINED;
 	philo->tail = philo->tail->next;
 }

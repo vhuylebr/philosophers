@@ -41,13 +41,13 @@ int main(int ac, char **av)
 	RCFStartup(ac, av);
 	philo = init(arg.nb_philo, arg.nb_rice, philo);
 	tmp = philo;
-	for (int i = 0; i < arg.nb_philo; ++i) {
+	for (ac = 0; ac < arg.nb_philo; ++ac) {
 		pthread_create(&tmp->thread, NULL, &start, (void *)tmp);
 		tmp = tmp->next;
 		usleep(5000);
 	}
 	tmp = philo;
-	for (int i = 0; i < arg.nb_philo; ++i) {
+	for (ac = 0; ac < arg.nb_philo; ++ac) {
 		pthread_join(tmp->thread, NULL);
 		tmp = tmp->next;
 	}
