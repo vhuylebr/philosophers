@@ -32,12 +32,12 @@ typedef struct list_s {
 	struct list_s *tail;
 	struct list_s *head;
 	struct list_s *next;
-}		list_t;
+} list_t;
 
 typedef struct arg_s {
 	int nb_philo;
 	int nb_rice;
-}		arg_t;
+} arg_t;
 
 void help(void);
 list_t *init(int nb_philo, int nb_rice, list_t *philo);
