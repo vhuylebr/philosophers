@@ -51,16 +51,16 @@ void eat_rest(list_t *tmp)
 {
 	tmp->state = EATING;
 	pthread_mutex_lock(&tmp->chopstick);
-	lphilo_take_chopstick(&tmp->chopstick);
-	lphilo_take_chopstick(&tmp->next->chopstick);
-	lphilo_eat();
-	lphilo_release_chopstick(&tmp->chopstick);
-	lphilo_release_chopstick(&tmp->next->chopstick);
+	// lphilo_take_chopstick(&tmp->chopstick);
+	// lphilo_take_chopstick(&tmp->next->chopstick);
+	// lphilo_eat();
+	// lphilo_release_chopstick(&tmp->chopstick);
+	// lphilo_release_chopstick(&tmp->next->chopstick);
 	pthread_mutex_unlock(&tmp->next->chopstick);
 	pthread_mutex_unlock(&tmp->chopstick);
 	--tmp->nb_rice;
 	tmp->state = RESTING;
-	lphilo_sleep();
+	// lphilo_sleep();
 }
 
 void *start(void *philo)
@@ -70,10 +70,10 @@ void *start(void *philo)
 	while (tmp->nb_rice > 0) {
 		if (pthread_mutex_trylock(&tmp->chopstick) == 0) {
 			tmp->state = THINKING;
-			lphilo_take_chopstick(&tmp->chopstick);
-			lphilo_think();
+			// lphilo_take_chopstick(&tmp->chopstick);
+			// lphilo_think();
 			pthread_mutex_unlock(&tmp->chopstick);
-			lphilo_release_chopstick(&tmp->chopstick);
+			// lphilo_release_chopstick(&tmp->chopstick);
 			if (pthread_mutex_trylock(&tmp->next->chopstick) == 0) {
 				eat_rest(tmp);
 			} else

@@ -38,7 +38,7 @@ int main(int ac, char **av)
 	arg_t arg;
 
 	check_arg(ac, av, &arg);
-	RCFStartup(ac, av);
+	// RCFStartup(ac, av);
 	philo = init(arg.nb_philo, arg.nb_rice, philo);
 	tmp = philo;
 	for (ac = 0; ac < arg.nb_philo; ++ac) {
@@ -51,6 +51,6 @@ int main(int ac, char **av)
 		pthread_join(tmp->thread, NULL);
 		tmp = tmp->next;
 	}
-	RCFCleanup();
+	// RCFCleanup();
 	return (0);
 }

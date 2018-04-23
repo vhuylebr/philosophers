@@ -7,7 +7,6 @@
 
 CC	=	gcc -Wall -Wextra
 
-
 RM	=	rm -f
 
 NAME	=	philo
@@ -18,7 +17,7 @@ SRC	=	philosopher.c	\
 OBJ	=	$(SRC:.c=.o)
 
 $(NAME)	:	$(OBJ)
-		$(CC) $(OBJ) -lriceferee -lpthread -L./ -o $(NAME)
+		$(CC) $(OBJ) -lpthread -L./ -o $(NAME)
 
 all	:	$(NAME)
 
